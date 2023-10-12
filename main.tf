@@ -5,6 +5,7 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
+      configuration_aliases = [ aws.global ]
     }
   }
 }
@@ -17,7 +18,6 @@ data "aws_region" "current" {}
  **/
 module "assets" {
   source       = "./modules/opennext-assets"
-  default_tags = var.default_tags
 
   prefix                   = "${var.prefix}-assets"
   assets_path              = "${local.opennext_abs_path}/assets"
@@ -31,7 +31,6 @@ module "assets" {
  **/
 module "server_function" {
   source       = "./modules/opennext-lambda"
-  default_tags = var.default_tags
 
   prefix = "${var.prefix}-nextjs-server"
 
@@ -67,7 +66,6 @@ module "server_function" {
  **/
 module "image_optimization_function" {
   source       = "./modules/opennext-lambda"
-  default_tags = var.default_tags
 
   prefix = "${var.prefix}-nextjs-image-optimization"
 
@@ -101,7 +99,6 @@ module "image_optimization_function" {
  **/
 module "revalidation_function" {
   source       = "./modules/opennext-lambda"
-  default_tags = var.default_tags
 
   prefix = "${var.prefix}-nextjs-revalidation"
 
@@ -136,7 +133,6 @@ module "revalidation_function" {
 module "revalidation_queue" {
   source       = "./modules/opennext-revalidation-queue"
   prefix       = "${var.prefix}-revalidation-queue"
-  default_tags = var.default_tags
 
   aws_account_id            = data.aws_caller_identity.current.account_id
   revalidation_function_arn = module.revalidation_function.lambda_function.arn
@@ -148,7 +144,6 @@ module "revalidation_queue" {
 
 module "warmer_function" {
   source       = "./modules/opennext-lambda"
-  default_tags = var.default_tags
 
   prefix                            = "${var.prefix}-nextjs-warmer"
   create_eventbridge_scheduled_rule = true
@@ -184,11 +179,14 @@ module "warmer_function" {
  **/
 module "cloudfront_logs" {
   source       = "./modules/cloudfront-logs"
-  default_tags = var.default_tags
+  providers = {
+    aws = aws
+    aws.global = aws.global
+  }
 
   log_group_name  = "${var.prefix}-cloudfront-logs"
   log_bucket_name = "${var.prefix}-cloudfront-logs"
-  retention       = 365
+  retention       = try(var.cloudfront.logs_retention, 365)
 }
 
 /**
@@ -196,8 +194,13 @@ module "cloudfront_logs" {
  **/
 module "cloudfront" {
   source       = "./modules/opennext-cloudfront"
+
+  providers = {
+    aws = aws
+    aws.global = aws.global
+  }
+
   prefix       = "${var.prefix}-cloudfront"
-  default_tags = var.default_tags
 
   logging_bucket_domain_name    = module.cloudfront_logs.logs_s3_bucket.bucket_regional_domain_name
   assets_origin_access_identity = module.assets.cloudfront_origin_access_identity.cloudfront_access_identity_path
