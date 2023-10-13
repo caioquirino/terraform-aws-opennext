@@ -6,6 +6,10 @@ variable "retention" {
   type    = number
   default = 365
 }
+variable "reserved_concurrent_executions" {
+  type    = number
+  default = null
+}
 
 variable "log_bucket_name" {
   type = string

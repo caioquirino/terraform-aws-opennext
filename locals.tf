@@ -72,7 +72,7 @@ locals {
       timeout                        = coalesce(try(var.server_options.function.timeout, null), 30)
       publish                        = coalesce(try(var.server_options.function.publish, null), false)
       dead_letter_config             = try(var.server_options.function.dead_letter_config, null)
-      reserved_concurrent_executions = coalesce(try(var.server_options.function.reserved_concurrent_executions, null), 10)
+      reserved_concurrent_executions = try(var.server_options.function.reserved_concurrent_executions, null)
       code_signing_config            = try(var.server_options.function.code_signing_config, null)
     }
 
@@ -134,7 +134,7 @@ locals {
       timeout                        = coalesce(try(var.image_optimization_options.function.timeout, null), 30)
       publish                        = coalesce(try(var.image_optimization_options.function.publish, null), false)
       dead_letter_config             = try(var.image_optimization_options.function.dead_letter_config, null)
-      reserved_concurrent_executions = coalesce(try(var.image_optimization_options.function.reserved_concurrent_executions, null), 3)
+      reserved_concurrent_executions = try(var.image_optimization_options.function.reserved_concurrent_executions, null)
       code_signing_config            = try(var.image_optimization_options.function.code_signing_config, null)
     }
 
@@ -184,7 +184,7 @@ locals {
       timeout                        = coalesce(try(var.revalidation_options.function.timeout, null), 30)
       publish                        = coalesce(try(var.revalidation_options.function.publish, null), false)
       dead_letter_config             = try(var.revalidation_options.function.dead_letter_config, null)
-      reserved_concurrent_executions = coalesce(try(var.revalidation_options.function.reserved_concurrent_executions, null), 3)
+      reserved_concurrent_executions = try(var.revalidation_options.function.reserved_concurrent_executions, null)
       code_signing_config            = try(var.revalidation_options.function.code_signing_config, null)
     }
 
@@ -235,7 +235,7 @@ locals {
       timeout                        = coalesce(try(var.warmer_options.function.timeout, null), 30)
       publish                        = coalesce(try(var.warmer_options.function.publish, null), false)
       dead_letter_config             = try(var.warmer_options.function.dead_letter_config, null)
-      reserved_concurrent_executions = coalesce(try(var.warmer_options.function.reserved_concurrent_executions, null), 3)
+      reserved_concurrent_executions = try(var.warmer_options.function.reserved_concurrent_executions, null)
       code_signing_config            = try(var.warmer_options.function.code_signing_config, null)
     }
 
